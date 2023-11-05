@@ -27,6 +27,7 @@ async function run() {
 
     const menuCollection = client.db("bistroDB").collection("menu");
     const reviewsCollection = client.db("bistroDB").collection("reviews");
+    const cartCollection = client.db("bistroDB").collection("carts");
 
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
@@ -34,6 +35,24 @@ async function run() {
     });
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
+      res.send(result);
+    });
+
+    //cart collection
+
+    //inset a cart
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.post("/carts", async (req, res) => {
+      const item = req.body;
+      const result = await cartCollection.insertOne(item);
       res.send(result);
     });
 
@@ -56,3 +75,15 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Your server is running on port ${port}`);
 });
+
+/**
+ * ------------------ -------------
+ * ------ Naming Convention ------
+ * users: userCollection
+ * app.get('/users');
+ * app.get('/users/:id') //for particular one data
+ * app.post('/users')
+ * app.patch('/users/:id') //to update one data
+ * app.put('/users/:id')
+ * app.delete('/users/:id')
+ * **/
